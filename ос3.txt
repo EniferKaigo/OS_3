@@ -1,0 +1,89 @@
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.Scanner;
+
+public class Proga
+{
+    private static Line con;
+    static boolean q = false;
+
+    public static void main(String args[])
+    {
+        System.out.println("私　は　兄 ではありません。");
+        con = new Line(200); 
+        Scanner c = new Scanner(System.in);
+        System.out.println(con.itemcount());
+        for (int i=0;i<3;i++)
+        {
+           Producer a = new Producer();
+           a.start();
+        }
+        for (int i=0;i<2;i++)
+        {
+            Consumer b = new Consumer();
+            b.start();
+        } 
+        String d;
+        do {d=c.next();} 
+        while (!d.equals("q")); 
+        q=true;
+    }
+   static class Producer extends MyThread
+    {   
+        public void run()
+        {  
+            while (!q)
+            { 
+                Random a = new Random();
+                if (con.itemcount()>=100){                
+                while (con.itemcount()>80)
+                slip(); continue;}
+                int count=a.nextInt(200);
+                con.push(count); 
+                System.out.println(con.itemcount());
+                slip();                
+            }
+        }
+        
+    }
+    static class Consumer extends MyThread
+    {   
+        public void run()
+        {  
+            while (!q)
+            { 
+                if (con.itemcount()==0) { slip(); continue;}
+                con.delete();
+                System.out.println(con.itemcount());
+                slip();
+            }
+        }
+        
+    } 
+    static class MyThread extends Thread 
+    {
+        public static void slip()
+        {
+            try{sleep(500);}
+            catch(InterruptedException z){}
+        }
+    } 
+    static class Line
+    {
+        private ArrayList <Integer> list;
+        private int size;
+        Line(int size){this.size=size; list = new ArrayList<>();}
+        public synchronized int itemcount()
+        {
+            return list.size(); 
+        }
+        public synchronized void push(int y)
+        {
+            if (list.size()<=size){list.add(y);}
+        }
+        public synchronized void delete()
+        {
+            list.remove(0);
+        }
+    } 
+}
